@@ -108,37 +108,36 @@ String movie = movies.get(0);
 
 不要忘记你能在方法中对参数和返回值使用泛型
 
-// 不要这样做
+// DON'T
 List sort(List input) {
     [...]
 }
 
-// 这样做
- List sort(List input) {
+// DO
+<T> List<T> sort(List<T> input) {
     [...]
 }
 
 想更灵活的话，你可以使用 bounded wildcards 来扩展你接受类型的范围。
 
-// 从集合中读取 Stuff - 使用 "extends"
-void readList(List movieList) {
+// Read stuff from collection - use "extends"
+void readList(List<? extends Movie> movieList) {
     for (Movie movie : movieList) {
         System.out.print(movie.getTitle());
         [...]
     }
 }
 
-// 向集合中写入 Stuff - 使用 "super"
-void writeList(List movieList) {
+// Write stuff to collection - use "super"
+void writeList(List<? super Movie> movieList) {
     movieList.add(Movie.create("Se7en"));
     [...]
 }
-
 返回空值
 
 当你方法的返回类型为 list/collecion 时，返回空值时要避免返回 null。返回一个空的集合类型，这会使得你简化接口（没有必要写文档来声明方法返回值为 null）并且避免空指针异常。就返回那个集合的空值，而不是再创建一个。
 
-List latestMovies() {
+List<Movie> latestMovies() {
     if (db.query().isEmpty()) {
         return Collections.emptyList();
     }
@@ -149,7 +148,7 @@ List latestMovies() {
 
 必须要拼接一系列字符串时，可能会使用 + 连字符。永远不要用它来拼接大量字符串，这样的性能真的很差，考虑使用 StringBuilder 来代替。
 
-String latestMovieOneLiner(List movies) {
+String latestMovieOneLiner(List<Movie> movies) {
 StringBuilder sb = new StringBuilder();
     for (Movie movie : movies) {
         sb.append(movie);
@@ -161,12 +160,13 @@ Recoverable exceptions
 
 我个人不喜欢抛出异常来指示错误，但是如果你这样做，确保这个异常被检查，确保这个异常被捕获到。
 
-List latestMovies() throws MoviesNotFoundException {
+List<Movie> latestMovies() throws MoviesNotFoundException {
     if (db.query().isEmpty()) {
 throw new MoviesNotFoundException();
     }
     [...]
 }
+
 
 结论
 
